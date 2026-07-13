@@ -45,7 +45,9 @@ function updateIosPlists(projectRoot, newVersion) {
                 if (name === "node_modules" || name === "Pods") continue;
                 walk(full);
             } else {
-                if (name === "Info.plist") plistFiles.push(full);
+                if (name === "Info.plist" && !full.includes("PrivacyInfo")) {
+                    plistFiles.push(full);
+                }
             }
         }
     })(iosRoot);
