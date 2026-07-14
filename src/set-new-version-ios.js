@@ -46,7 +46,6 @@ function updateIosPlists(projectRoot, newVersion) {
                 walk(full);
             } else {
                 if (name === "Info.plist" && !full.includes("PrivacyInfo")) {
-                    console.log(`[New Version][iOS] ficheiro ${name}. fullpath "${full}"`);
                     plistFiles.push(full);
                 }
             }
@@ -149,32 +148,6 @@ async function setIosVersion(context) {
     } catch (err) {
         console.error("[New Version][iOS] Erro ao modificar o config.xml ou plists:", err);
     }
-
-    /*try {
-        // Atualiza config.xml: remove preferência NEW_VERSION e define version
-        const xmlContent = fs.readFileSync(configXmlPath, "utf-8");
-        const parser = new xml2js.Parser();
-        const result = await parser.parseStringPromise(xmlContent);
-
-        if (result.widget.preference) {
-            const indexNEW_VERSION = result.widget.preference.findIndex(p => p.$.name === "NEW_VERSION");
-            if (indexNEW_VERSION !== -1) {
-                result.widget.preference.splice(indexNEW_VERSION, 1);
-                console.log('[New Version][iOS] Preferência "NEW_VERSION" removida do config.xml.');
-            }
-        }
-
-        result.widget.$.version = newVersion;
-
-        const newXmlContent = builder.buildObject(result);
-        fs.writeFileSync(configXmlPath, newXmlContent, "utf-8");
-        console.log("[New Version][iOS] config.xml atualizado com a nova versão.");
-
-        // Atualiza Info.plist(s)
-        updateIosPlists(projectRoot, newVersion);
-    } catch (err) {
-        console.error("[New Version][iOS] Erro ao modificar o config.xml ou plists:", err);
-    }*/
 }
 
 module.exports = setIosVersion;
