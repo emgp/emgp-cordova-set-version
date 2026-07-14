@@ -46,6 +46,7 @@ function updateIosPlists(projectRoot, newVersion) {
                 walk(full);
             } else {
                 if (name === "Info.plist" && !full.includes("PrivacyInfo")) {
+                    console.log(`[New Version][iOS] ficheiro ${name}. fullpath "${full}"`);
                     plistFiles.push(full);
                 }
             }
