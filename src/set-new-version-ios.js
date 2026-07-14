@@ -126,8 +126,31 @@ async function setIosVersion(context) {
         console.log("[New Version][iOS] Variável NEW_VERSION não definida ou inválida. Nenhuma ação será realizada.");
         return;
     }
-
     try {
+        // CORRECÇÃO: Atualiza a versão no config.xml via Regex para não quebrar o resto da estrutura XML
+        let xmlContent = fs.readFileSync(configXmlPath, "utf-8");
+
+        // Atualiza o atributo version="X.X.X" na tag <widget>
+        const widgetRegex = /(<widget[^>]*?\sversion=")([^"]*)(")/;
+        if (widgetRegex.test(xmlContent)) {
+            xmlContent = xmlContent.replace(widgetRegex, `$1${newVersion}$3`);
+            console.log(`[New Version][iOS] Atributo version atualizado para ${newVersion} no config.xml`);
+        }
+
+        // Remove a preferência NEW_VERSION para limpar o ficheiro
+        const prefRegex = /<preference\s+name="NEW_VERSION"\s+value="[^"]*"\s*\/?>\r?\n?/g;
+        xmlContent = xmlContent.replace(prefRegex, "");
+
+        fs.writeFileSync(configXmlPath, xmlContent, "utf-8");
+        console.log("[New Version][iOS] config.xml guardado com sucesso via Regex.");
+
+        // Atualiza Info.plist(s)
+        updateIosPlists(projectRoot, newVersion);
+    } catch (err) {
+        console.error("[New Version][iOS] Erro ao modificar o config.xml ou plists:", err);
+    }
+
+    /*try {
         // Atualiza config.xml: remove preferência NEW_VERSION e define version
         const xmlContent = fs.readFileSync(configXmlPath, "utf-8");
         const parser = new xml2js.Parser();
@@ -151,7 +174,7 @@ async function setIosVersion(context) {
         updateIosPlists(projectRoot, newVersion);
     } catch (err) {
         console.error("[New Version][iOS] Erro ao modificar o config.xml ou plists:", err);
-    }
+    }*/
 }
 
 module.exports = setIosVersion;
